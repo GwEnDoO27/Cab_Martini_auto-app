@@ -1,0 +1,14 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# modules 
+node_modules/
+
+/backend/*.json
+/backend/*.csv
+/backend/uploads
+
+/frontend/*.json
+/frontend/public/*.json
+/frontend/public/*.ico
+
+/build
