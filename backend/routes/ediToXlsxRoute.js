@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
+const path = require('path');
 
 const { runPythonScript } = require('../helpers/runPython');
 
@@ -41,23 +42,25 @@ router.get('/formatting', async (req, res) => {
     }
 
     try {
+        // Send the output back to the client
         const filePath = `./uploads/${lastUploadedFile}`;
-        const output = await runPythonScript(`python-scripts/extracting_csv.py ${filePath}`);
-
-        // Send both stdout and stderr in the response
-        res.json({
-            success: true,
-            stdout: output.stdout,
-            stderr: output.stderr || null // Send stderr if present
-        });
+        const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
+        res.send(output);
     } catch (error) {
-        // If an error occurs, send both the error message and stderr
-        res.status(500).json({
-            success: false,
-            message: `Une erreur est survenue : ${error.message}`,
-            stderr: error.stderr || null
-        });
+        res.status(500).send(error.message);
     }
+});
+
+// Serve the Excel file
+router.get('/download', (req, res) => {
+    const filePath = "/home/student/Documents/auto-app/backend/downloads/excel_values.xlsx"
+
+    res.download(filePath, (err) => {
+        if (err) {
+            console.error(err);
+            res.status(404).send('File not found');
+        }
+    });
 });
 
 module.exports = router;

@@ -1,22 +1,10 @@
 import sys, csv, os, shutil
+import pandas as pd
+import xml.etree.ElementTree as ET
+from openpyxl import Workbook
+from os.path import join
 
-def delete_all_contents_in_folder(folder_path):
-    # Check if the folder exists
-    if not os.path.exists(folder_path):
-        print(f"The folder '{folder_path}' does not exist.")
-        return
-
-    # List all files and directories in the folder
-    for filename in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)  # Remove the file or link
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)  # Remove the directory and its contents
-        except Exception as e:
-            print(f"Failed to delete {file_path}. Reason: {e}")
-
+# Extract the values from the EDI file
 def extract_bill_values(file_path):
     moa_values = []
     totals_values = []
@@ -106,6 +94,8 @@ def extract_bill_values(file_path):
             advance_value = num
             to_pay = total + num
 
+    final_moa = strings.replace
+
     bill_values = {
         'articles_values': moa_values,
         'advance': advance_value,
@@ -117,7 +107,7 @@ def extract_bill_values(file_path):
 
     return bill_values
 
-# Main execution logic
+# Extract the values from the EDI file and format them into a CSV file
 def formating_csv():
     if __name__ == "__main__": 
         if len(sys.argv) > 1: 
@@ -133,7 +123,7 @@ def formating_csv():
             articles = bill_values['articles_values']
 
             # Save the extracted values to a CSV file
-            with open("totals_values.csv", "w", newline='', encoding='utf-8') as f:
+            with open("./uploads/totals_values.csv", "w", newline='', encoding='utf-8') as f:
                 data = [
                     {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "401000", "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": "", "CREDIT": bill_values['net_payable']},
                     {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "411000", "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": bill_values['advance'], "CREDIT": ""},          
@@ -156,8 +146,85 @@ def formating_csv():
             print("Usage: python3 extracting_csv.py <text_filename>")
             sys.exit(1)
 
-# Call the main execution logic
+# Delete all files in the folder
+def delete_all_contents_in_folder(folder_path):
+    # Check if the folder exists
+    if not os.path.exists(folder_path):
+        print(f"The folder '{folder_path}' does not exist.")
+        return
+
+    # List all files and directories in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # Remove the file or link
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Remove the directory and its contents
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
+# Convert the CSV file to an XML file
+def CSVtoXML(inputfile,outputfile):
+    if not inputfile.lower().endswith('.csv'):
+        print('Expected A CSV File')
+        return 0
+    if not outputfile.lower().endswith('.xml'):
+        print('Expected a XML file')
+        return 0
+    
+    df = pd.read_csv(inputfile)
+
+    entireop='<collection allInfos="EDI content">\n'
+    att=df.columns
+    rowop=''
+    for j in range(len(df)):
+        for i in range(len(att)):
+            if i==0:
+                rowop=rowop+f'<{att[i]} title="{df[att[i]][j]}">\n'
+            elif i==len(att)-1:
+                rowop=rowop+f'<{att[i]}>{df[att[i]][j]}</{att[i]}>\n</{att[0]}>\n'
+            else:
+                rowop=rowop+f'<{att[i]}>{df[att[i]][j]}</{att[i]}>\n'
+    entireop=entireop+rowop+'</collection>'
+    with open(outputfile,'w') as f:
+        f.write(entireop)
+
+# Convert the XML file to an Excel file
+def XMLtoXLSX():
+    # Load the XML file
+    tree = ET.parse('./downloads/totals_values.xml')
+    root = tree.getroot()
+
+    # Create a new Excel workbook
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Valeurs EDI"
+
+    # Assuming XML structure is uniform and you want to capture child elements
+    # Extract headers from the XML file (based on the first row/element)
+    headers = [elem.tag for elem in root[0]]  # Gets tags of the first element's children
+
+    # Write the headers to Excel
+    ws.append(headers)
+
+    # Iterate through the XML elements and extract the data
+    for element in root:
+        row_data = [child.text for child in element]  # Get text values of child elements
+        ws.append(row_data)
+
+    wb.save(join("./downloads", "excel_values.xlsx"))
+
+# Call the function to extract the values from the EDI file and format them into a CSV file
 formating_csv()
 
-folder_path = './uploads'
-delete_all_contents_in_folder(folder_path)
+# Merge all CSV files in the folder into a single Excel file
+CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
+XMLtoXLSX()
+
+print("The CSV file has been converted to an Excel file.")
+
+# Delete all files saved in 'uploads'
+# delete_all_contents_in_folder('./uploads')
+
+print("All files in the folder 'uploads' and 'downloads' have been deleted.")
