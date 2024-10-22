@@ -79,13 +79,14 @@ const EdiToXlsxPage = () => {
                 <input type="file" onChange={handleFileChange} />
                 <div id="error-message">{errorMessage}</div>
                 <p>Le fichier sélectionné est : {selectedFile ? selectedFile.name : 'Aucun fichier sélectionné'} à convertir en XLSX.</p>
+                <p>Appuyez sur le bouton ci-dessous pour envoyer le fichier. Puis, formattez le :</p>
                 <button onClick={uploadFile}>Envoyer le fichier</button>
                 <button class="formatting-btn" onClick={format}>Formatter le fichier en XLSX</button>
             </div>
 
             <div class="result">
                 <pre id="output">{output}</pre>
-                    <p>Télécharger le fichier ci-dessous</p>
+                    <p>Télécharger le fichier ci-dessous :</p>
                 <a id="download-btn">
                     <button onClick={handleDownload}>Télécharger le fichier</button>
                 </a>

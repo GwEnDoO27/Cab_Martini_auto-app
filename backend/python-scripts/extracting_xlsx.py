@@ -10,8 +10,9 @@ def extract_bill_values(file_path):
     # Mapping of the code to the corresponding general value
     code_map = {
     '001 SURGELE': '601100',
+    '002 ALIMENTAIRE': '601100',
     '003 EMBALLAGE': '602201',
-    '004 FOURN. OP': '606302',
+    '004 FOURN.OP': '606302',
     '005 HABILLEMENT': '606303',
     '006 FOURN.BUR': '606401',
     '007 JOUETS et DIV': '602202',
@@ -44,10 +45,12 @@ def extract_bill_values(file_path):
     found_codes = set()
 
     for line in lines:
+        print('line:', line)
         # Check if any of the keys from code_map are in the line
         for code in code_map:
             if code in line:
                 if code in line and code not in found_codes:  # Only add if code is not in found_codes
+                    print('adding this code:', code)
                     gen_values.append(code_map[code])  # Append corresponding value
                     found_codes.add(code)  # Mark this code as found
 
@@ -207,7 +210,7 @@ def CSVtoXML(inputfile, outputfile):
     # Function to format 'DEBIT' values with commas instead of dots
     def format_debit(value):
         if isinstance(value, (int, float)) and not pd.isna(value):
-            return f"{abs(value):,.2f}".replace('.', ',')  # abs() to remove negative signs
+            return f"{abs(value):.2f}".replace('.', ',')  # abs() to remove negative signs
         return value
     
     # Function to remove trailing .0 in 'GENERAL' column
