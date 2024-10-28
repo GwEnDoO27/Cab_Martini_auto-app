@@ -6,6 +6,7 @@ from openpyxl import Workbook
 from os.path import join
 
 # Extract the values from the EDI file
+# File path in the folder "./uploads/folder_name/{file_name}"
 def extract_bill_values(file_path):
     # Mapping of the code to the corresponding general value
     code_map = {
@@ -136,62 +137,42 @@ def extract_bill_values(file_path):
     return bill_values
 
 # Extract the values from the EDI file and format them into a CSV file
-def formating_csv():
+# Need a file path for this arg!!!
+def formating_csv(file_name):
     if __name__ == "__main__": 
-        if len(sys.argv) > 1: 
-            edi_filename = sys.argv[1]
+        bill_values = extract_bill_values(file_name)
 
-            bill_values = extract_bill_values(edi_filename)
+        if isinstance(bill_values, str):
+            print(bill_values)  # If extract_bill_values returned an error message
+            return
 
-            if isinstance(bill_values, str):
-                print(bill_values)  # If extract_bill_values returned an error message
-                return
+        # Put all the values of debit of articles in an array
+        articles = bill_values['articles_values']
+        print(bill_values['general_values'])
 
-            # Put all the values of debit of articles in an array
-            articles = bill_values['articles_values']
-            print(bill_values['general_values'])
+        # Save the extracted values to a CSV file
+        with open("./uploads/totals_values.csv", "w", newline='', encoding='utf-8') as f:
+            data = [
+                {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "401000", "AUXILIAIRE": "401LR", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": "", "CREDIT": bill_values['net_payable']},
+                {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "411000", "AUXILIAIRE": "411MB", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": "", "CREDIT": bill_values['advance']},          
+                {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "445660", "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": bill_values['tva'], "CREDIT": ""},          
+            ]
 
-            # Save the extracted values to a CSV file
-            with open("./uploads/totals_values.csv", "w", newline='', encoding='utf-8') as f:
-                data = [
-                    {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "401000", "AUXILIAIRE": "401LR", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": "", "CREDIT": bill_values['net_payable']},
-                    {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "411000", "AUXILIAIRE": "411MB", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": "", "CREDIT": bill_values['advance']},          
-                    {"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": "445660", "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": bill_values['tva'], "CREDIT": ""},          
-                ]
+            for i, j in zip(articles, bill_values['general_values']):
+                data.append({"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": j, "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": i, "CREDIT": ""})
 
-                for i, j in zip(articles, bill_values['general_values']):
-                    data.append({"JOURNAL": "ACM", "DATE": bill_values['date'], "GENERAL": j, "AUXILIAIRE": "", "REFERENCE": bill_values['reference'], "LIBELLE": "Achat MB " + bill_values['reference'], "DEBIT": i, "CREDIT": ""})
+            writer = csv.writer(f)
 
-                writer = csv.writer(f)
+            # Write the headers first
+            fieldnames = ["JOURNAL", "DATE", "GENERAL", "AUXILIAIRE", "REFERENCE", "LIBELLE", "DEBIT", "CREDIT"]
+            writer = csv.DictWriter(f, fieldnames=fieldnames)
+            writer.writeheader()
+            writer.writerows(data)
 
-                # Write the headers first
-                fieldnames = ["JOURNAL", "DATE", "GENERAL", "AUXILIAIRE", "REFERENCE", "LIBELLE", "DEBIT", "CREDIT"]
-                writer = csv.DictWriter(f, fieldnames=fieldnames)
-                writer.writeheader()
-                writer.writerows(data)
-
-                print("Your EDI text file has been formatted and saved in 'totals_values.csv'")
-        else:
-            print("Usage: python3 extracting_csv.py <text_filename>")
-            sys.exit(1)
-
-# Delete all files in the folder
-def delete_all_contents_in_folder(folder_path):
-    # Check if the folder exists
-    if not os.path.exists(folder_path):
-        print(f"The folder '{folder_path}' does not exist.")
-        return
-
-    # List all files and directories in the folder
-    for filename in os.listdir(folder_path):
-        file_path = os.path.join(folder_path, filename)
-        try:
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)  # Remove the file or link
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)  # Remove the directory and its contents
-        except Exception as e:
-            print(f"Failed to delete {file_path}. Reason: {e}")
+            print("Your EDI text file has been formatted and saved in 'totals_values.csv'")
+    else:
+        print("Usage: python3 extracting_csv.py <text_filename>")
+        sys.exit(1)
 
 # Convert the CSV file to an XML file
 def CSVtoXML(inputfile, outputfile):
@@ -250,9 +231,9 @@ def CSVtoXML(inputfile, outputfile):
         f.write(entireop)
  
 # Convert the XML file to an Excel file
-def XMLtoXLSX():
+def XMLtoXLSX(file_name):
     # Load the XML file
-    tree = ET.parse('./downloads/totals_values.xml')
+    tree = ET.parse('./downloads/' + file_name)
     root = tree.getroot()
 
     # Create a new Excel workbook
@@ -272,17 +253,56 @@ def XMLtoXLSX():
         row_data = [child.text for child in element]  # Get text values of child elements
         ws.append(row_data)
 
-    wb.save(join("./downloads", "excel_values.xlsx"))  
+    wb.save(join("./downloads", file_name + '.xlsx'))  
+
+# Delete all files in the folder
+def delete_all_contents_in_folder(folder_path):
+    # Check if the folder exists
+    if not os.path.exists(folder_path):
+        print(f"The folder '{folder_path}' does not exist.")
+        return
+
+    # List all files and directories in the folder
+    for filename in os.listdir(folder_path):
+        file_path = os.path.join(folder_path, filename)
+        try:
+            if os.path.isfile(file_path) or os.path.islink(file_path):
+                os.unlink(file_path)  # Remove the file or link
+            elif os.path.isdir(file_path):
+                shutil.rmtree(file_path)  # Remove the directory and its contents
+        except Exception as e:
+            print(f"Failed to delete {file_path}. Reason: {e}")
+
+input_path = './uploads'
+output_folder = './downloads'
+
+def EDItoXLSX(input_path, output_folder):
+    # Check if input_path is a file or directory
+    if os.path.isfile(input_path):
+        # Single file, process it
+        formating_csv("./uploads", output_folder)
+        CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
+
+    elif os.path.isdir(input_path):
+        # It's a folder, process all CSV files in the folder
+        for filename in os.listdir(input_path):
+            if filename.endswith(".csv"):
+                file_path = os.path.join(input_path, filename)
+                process_file(file_path, output_folder)
+    else:
+        print(f"{input_path} is neither a file nor a folder.")
+        return 0
 
 # Call the function to extract the values from the EDI file and format them into a CSV file
 formating_csv()
 
-# Merge all CSV files in the folder into a single Excel file
+# Convert the CSV file to an XML file
 CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
 XMLtoXLSX()
 
 print("The CSV file has been converted to an Excel file.")
 
 # Delete all files saved in 'uploads'
-delete_all_contents_in_folder('./uploads')
+# delete_all_contents_in_folder('./uploads')
+
 print("All files in the folder 'uploads' have been deleted.")
