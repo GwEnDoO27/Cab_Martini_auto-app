@@ -284,6 +284,5 @@ XMLtoXLSX()
 print("The CSV file has been converted to an Excel file.")
 
 # Delete all files saved in 'uploads'
-# delete_all_contents_in_folder('./uploads')
-
+delete_all_contents_in_folder('./uploads')
 print("All files in the folder 'uploads' have been deleted.")
