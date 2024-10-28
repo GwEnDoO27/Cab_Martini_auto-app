@@ -19,7 +19,7 @@ const HomePage = () => {
                 <h1>Répertoire des applications</h1>
             </header>
             <div class='btns-container'>
-                <button onClick={handleEdiXlsxClick}>Convertir fichier EDI en XLSX</button>
+                <button onClick={handleEdiXlsxClick}>Convertir fichier EDI (.txt) en fichier Excel</button>
             </div>
             {/* <div className={styles.container}>
                 <button className={styles.button} onClick={handlePdfXmlClick}>Convertir fichier PDF en XML</button>

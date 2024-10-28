@@ -71,22 +71,22 @@ const EdiToXlsxPage = () => {
                 <h1>Répertoire des applications</h1>
             </header>
             <div class="convert-btn">
-                <h2>Convertir fichier EDI en XLSX</h2>
-                <p>Choisissez un fichier EDI à convertir en XLSX.</p>
+                <h2>Convertir fichier EDI (.txt) en fichier Excel</h2>
+                <p>Choisissez un fichier EDI à convertir en fichier Excel.</p>
             </div>
 
             <div id="convert">
                 <input type="file" onChange={handleFileChange} />
                 <div id="error-message">{errorMessage}</div>
-                <p>Le fichier sélectionné est : {selectedFile ? selectedFile.name : 'Aucun fichier sélectionné'} à convertir en XLSX.</p>
+                <p>Le fichier sélectionné est : {selectedFile ? selectedFile.name : 'Aucun fichier sélectionné'}</p>
                 <p>Appuyez sur le bouton ci-dessous pour envoyer le fichier. Puis, formattez le :</p>
-                <button onClick={uploadFile}>Envoyer le fichier</button>
-                <button class="formatting-btn" onClick={format}>Formatter le fichier en XLSX</button>
+                <button onClick={uploadFile}>Récupérer le fichier</button>
+                <button class="formatting-btn" onClick={format}>Formatter le fichier en Excel.</button>
             </div>
 
             <div class="result">
                 <pre id="output">{output}</pre>
-                    <p>Télécharger le fichier ci-dessous :</p>
+                    <p>Téléchargez le fichier ci-dessous :</p>
                 <a id="download-btn">
                     <button onClick={handleDownload}>Télécharger le fichier</button>
                 </a>
