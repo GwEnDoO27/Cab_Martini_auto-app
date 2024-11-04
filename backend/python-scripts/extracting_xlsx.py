@@ -293,16 +293,45 @@ def EDItoXLSX(input_path, output_folder):
         print(f"{input_path} is neither a file nor a folder.")
         return 0
 
-# Call the function to extract the values from the EDI file and format them into a CSV file
-formating_csv()
+# Functions thay will be called in the main script of formatting
+def process_file(file_path, output_folder):
+    # Extract values from the EDI file and format them into a CSV file
+    formating_csv(file_path)
 
-# Convert the CSV file to an XML file
-CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
-XMLtoXLSX()
+    # Convert the CSV file to an XML file
+    CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
 
-print("The CSV file has been converted to an Excel file.")
+    # Convert the XML file to an Excel file
+    XMLtoXLSX()
 
-# Delete all files saved in 'uploads'
-# delete_all_contents_in_folder('./uploads')
+    print("The CSV file has been converted to an Excel file.")
 
-print("All files in the folder 'uploads' have been deleted.")
+    # Delete all files saved in 'uploads'
+    delete_all_contents_in_folder('./uploads')
+
+    print("All files in the folder 'uploads' have been deleted.")
+
+def process_folder(file_path, output_path):
+    # Check if the file path is a directory
+    if os.path.isdir(file_path):
+        # Loop through each file in the directory
+        for filename in os.listdir(file_path):
+            # Check if the file is an EDI file
+            if filename.endswith(".txt"):
+                # Extract values from the EDI file and format them into a CSV file
+                formating_csv(file_path)
+
+                # Convert the CSV file to an XML file
+                CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
+
+                # Convert the XML file to an Excel file
+                XMLtoXLSX()
+
+                print("The CSV file has been converted to an Excel file.")
+
+                # Delete all files saved in 'uploads'
+                delete_all_contents_in_folder('./uploads')
+
+                print("All files in the folder 'uploads' have been deleted.")
+    else:
+        print(f"The path '{file_path}' is not a directory.")
