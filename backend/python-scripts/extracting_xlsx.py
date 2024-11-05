@@ -5,8 +5,10 @@ import xml.etree.ElementTree as ET
 from openpyxl import Workbook
 from os.path import join
 
+if len(sys.argv) > 1: 
+    file_name = sys.argv[1]
+
 # Extract the values from the EDI file
-# File path in the folder "./uploads/folder_name/{file_name}"
 def extract_bill_values(file_path):
     # Mapping of the code to the corresponding general value
     code_map = {
@@ -137,7 +139,6 @@ def extract_bill_values(file_path):
     return bill_values
 
 # Extract the values from the EDI file and format them into a CSV file
-# Need a file path for this arg!!!
 def formating_csv(file_name):
     if __name__ == "__main__": 
         bill_values = extract_bill_values(file_name)
@@ -233,7 +234,7 @@ def CSVtoXML(inputfile, outputfile):
 # Convert the XML file to an Excel file
 def XMLtoXLSX(file_name):
     # Load the XML file
-    tree = ET.parse('./downloads/' + file_name)
+    tree = ET.parse(file_name)
     root = tree.getroot()
 
     # Create a new Excel workbook
@@ -253,7 +254,7 @@ def XMLtoXLSX(file_name):
         row_data = [child.text for child in element]  # Get text values of child elements
         ws.append(row_data)
 
-    wb.save(join("./downloads", file_name + '.xlsx'))  
+    wb.save(join("./downloads", 'excel_values.xlsx'))  
 
 # Delete all files in the folder
 def delete_all_contents_in_folder(folder_path):
@@ -273,10 +274,8 @@ def delete_all_contents_in_folder(folder_path):
         except Exception as e:
             print(f"Failed to delete {file_path}. Reason: {e}")
 
-input_path = './uploads'
-output_folder = './downloads'
 
-def EDItoXLSX(input_path, output_folder):
+# def EDItoXLSX(input_path, output_folder):
     # Check if input_path is a file or directory
     if os.path.isfile(input_path):
         # Single file, process it
@@ -291,45 +290,15 @@ def EDItoXLSX(input_path, output_folder):
         print(f"{input_path} is neither a file nor a folder.")
         return 0
 
-# Functions thay will be called in the main script of formatting
-def process_file(file_path, output_folder):
-    # Extract values from the EDI file and format them into a CSV file
-    formating_csv("./uploads")
-
-    # Convert the CSV file to an XML file
-    CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
-
-    # Convert the XML file to an Excel file
-    XMLtoXLSX()
-
-    print("The CSV file has been converted to an Excel file.")
-
-    # Delete all files saved in 'uploads'
-    delete_all_contents_in_folder('./uploads')
-
-    print("All files in the folder 'uploads' have been deleted.")
-
-def process_folder(file_path, output_path):
-    # Check if the file path is a directory
-    if os.path.isdir(file_path):
-        # Loop through each file in the directory
-        for filename in os.listdir(file_path):
-            # Check if the file is an EDI file
-            if filename.endswith(".txt"):
-                # Extract values from the EDI file and format them into a CSV file
-                formating_csv(file_path)
-
-                # Convert the CSV file to an XML file
-                CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
-
-                # Convert the XML file to an Excel file
-                XMLtoXLSX()
-
-                print("The CSV file has been converted to an Excel file.")
-
-                # Delete all files saved in 'uploads'
-                delete_all_contents_in_folder('./uploads')
-
-                print("All files in the folder 'uploads' have been deleted.")
-    else:
-        print(f"The path '{file_path}' is not a directory.")
+def EDItoXLSX():
+    xml_file = './downloads/totals_values.xml'
+    # Check if input_path is a file or directory
+    if os.path.isfile(file_name):
+        
+        # Single file, process it
+        formating_csv(file_name)
+        CSVtoXML('./uploads/totals_values.csv', xml_file)
+        XMLtoXLSX(xml_file)
+        print("one file name :", file_name)
+        # delete_all_contents_in_folder('./uploads')
+        # print("All files in the folder 'uploads' have been deleted.")
