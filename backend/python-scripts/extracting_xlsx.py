@@ -280,9 +280,7 @@ def EDItoXLSX(input_path, output_folder):
     # Check if input_path is a file or directory
     if os.path.isfile(input_path):
         # Single file, process it
-        formating_csv("./uploads", output_folder)
-        CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
-
+        process_file(input_path, output_folder)
     elif os.path.isdir(input_path):
         # It's a folder, process all CSV files in the folder
         for filename in os.listdir(input_path):
@@ -296,7 +294,7 @@ def EDItoXLSX(input_path, output_folder):
 # Functions thay will be called in the main script of formatting
 def process_file(file_path, output_folder):
     # Extract values from the EDI file and format them into a CSV file
-    formating_csv(file_path)
+    formating_csv("./uploads")
 
     # Convert the CSV file to an XML file
     CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
