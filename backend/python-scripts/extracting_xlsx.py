@@ -274,29 +274,10 @@ def delete_all_contents_in_folder(folder_path):
         except Exception as e:
             print(f"Failed to delete {file_path}. Reason: {e}")
 
-
-# def EDItoXLSX(input_path, output_folder):
-    # Check if input_path is a file or directory
-    if os.path.isfile(input_path):
-        # Single file, process it
-        formating_csv("./uploads", output_folder)
-        CSVtoXML('./uploads/totals_values.csv', './downloads/totals_values.xml')
-
-    elif os.path.isdir(input_path):
-        # It's a folder, process all CSV files in the folder
-        for filename in os.listdir(input_path):
-            if filename.endswith(".csv"):
-                file_path = os.path.join(input_path, filename)
-                process_file(file_path, output_folder)
-    else:
-        print(f"{input_path} is neither a file nor a folder.")
-        return 0
-
 def EDItoXLSX():
     xml_file = './downloads/totals_values.xml'
     # Check if input_path is a file or directory
     if os.path.isfile(file_name):
-        
         # Single file, process it
         formating_csv(file_name)
         CSVtoXML('./uploads/totals_values.csv', xml_file)

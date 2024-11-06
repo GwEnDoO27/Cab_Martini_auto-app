@@ -4,7 +4,8 @@
 node_modules/
 
 /backend/*.json
-/backend/*.xlsx
+/backend/downloads/*.xlsx
+/backend/downloads/*.xml
 /backend/uploads
 
 /frontend/*.json
