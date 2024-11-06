@@ -278,7 +278,6 @@ def EDItoXLSX():
     xml_file = './downloads/totals_values.xml'
     # Check if input_path is a file or directory
     if os.path.isfile(file_name):
-        
         # Single file, process it
         formating_csv(file_name)
         CSVtoXML('./uploads/totals_values.csv', xml_file)
@@ -286,3 +285,16 @@ def EDItoXLSX():
         print("one file name :", file_name)
         # delete_all_contents_in_folder('./uploads')
         # print("All files in the folder 'uploads' have been deleted.")
+
+    elif os.path.isdir(file_name):
+        # It's a folder, process all files in the folder
+        for filename in os.listdir(file_name):
+            formating_csv(filename)
+            CSVtoXML('./uploads/totals_values.csv', xml_file)
+            XMLtoXLSX(xml_file)
+            print("multiple file names :", filename)
+    else:
+        print(f"{file_name} is neither a file nor a folder.")
+        return 0
+
+EDItoXLSX()
