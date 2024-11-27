@@ -53,7 +53,7 @@ router.get('/formatting', async (req, res) => {
 
 // Serve the Excel file
 router.get('/download', (req, res) => {
-    const filePath = "/home/student/Documents/auto-app/backend/downloads/excel_values.xlsx"
+    const filePath = "../downloads/excel_values.xlsx"
 
     res.download(filePath, (err) => {
         if (err) {
