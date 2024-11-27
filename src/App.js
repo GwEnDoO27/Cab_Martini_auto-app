@@ -1,7 +1,7 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './components/HomePage'; // Import the HomePage component
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import EdiToXlsxPage from './components/EdiToXlsxPage'; // Import the EdiToXlsxPage component
+import HomePage from './components/HomePage'; // Import the HomePage component
 import PdfToXmlPage from './components/PdfToXmlPage'; // Import the PdfToXmlPage component
 
 const App = () => {
@@ -12,13 +12,13 @@ const App = () => {
                     {/* Defining routes here using the new 'Routes' component */}
 
                     {/* Home page route */}
-                    <Route exact path="/" element={<HomePage/>} />
+                    <Route exact path="/" element={<HomePage />} />
 
                     {/* Formatting EDI to XLSX route */}
-                    <Route path="/edi_to_xlsx" element={<EdiToXlsxPage/>} />
+                    <Route path="/edi_to_xlsx" element={<EdiToXlsxPage />} />
 
                     {/* Formatting PDF to XML route */}
-                    <Route path="/pdf_to_xml" element={<PdfToXmlPage/>} />
+                    <Route path="/pdf_to_xml" element={<PdfToXmlPage />} />
 
                 </Routes>
             </div>

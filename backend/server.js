@@ -18,7 +18,7 @@ app.use(express.json()); // Enable JSON parsing for incoming requests
 app.use('/', routeIndex);
 console.log('Server is running');
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });

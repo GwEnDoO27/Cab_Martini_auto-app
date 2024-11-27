@@ -19,7 +19,7 @@ const EdiToXlsxPage = () => {
         formData.append('file', selectedFile); // Append the file to the FormData
 
         try {
-            const response = await fetch('http://localhost:5000/edi_to_xlsx/upload-file', {
+            const response = await fetch('http://localhost:4000/edi_to_xlsx/upload-file', {
                 method: 'POST',
                 body: formData,
             });
@@ -40,7 +40,7 @@ const EdiToXlsxPage = () => {
 
     const format = async () => {
         try {
-            const response = await fetch('http://localhost:5000/edi_to_xlsx/formatting', {
+            const response = await fetch('http://localhost:4000/edi_to_xlsx/formatting', {
                 method: 'GET', // Change to GET for triggering the script
             });
 
@@ -56,7 +56,7 @@ const EdiToXlsxPage = () => {
     };
 
     const handleDownload = () => {
-        const fileUrl = 'http://localhost:5000/edi_to_xlsx/download';
+        const fileUrl = 'http://localhost:4000/edi_to_xlsx/download';
         const link = document.createElement('a');
         link.href = fileUrl;
         link.download = ''; // This will download the file with its original name
@@ -86,10 +86,10 @@ const EdiToXlsxPage = () => {
 
             <div class="result">
                 <pre id="output">{output}</pre>
-                    <p>Téléchargez le fichier ci-dessous :</p>
-                <a id="download-btn">
-                    <button onClick={handleDownload}>Télécharger le fichier</button>
-                </a>
+                <p>Téléchargez le fichier ci-dessous :</p>
+
+                <button onClick={handleDownload}>Télécharger le fichier</button>
+
             </div>
         </div>
     );
