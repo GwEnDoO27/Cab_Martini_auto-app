@@ -43,8 +43,10 @@ router.get('/formatting', async (req, res) => {
     if (!lastUploadedFile || lastUploadedFile.length === 0) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
+    console.log("lastUploadedFile avant try",lastUploadedFile)
 
-    if (lastUploadedFile.length > 1) {
+    if (lastUploadedFile.length === 1) {
+        console.log("lastUploadedFile avant boucle == 1",lastUploadedFile)
         try {
             // Send the output back to the client
             const filePath = `./uploads/${lastUploadedFile}`;
@@ -55,6 +57,7 @@ router.get('/formatting', async (req, res) => {
             res.status(500).send(error);
         }
     } else {
+        console.log("lastUploadedFile try boucle sup 1",lastUploadedFile)
         try {
             for (const element of lastUploadedFile) {
                 const filePath = `./uploads/${element}`;
