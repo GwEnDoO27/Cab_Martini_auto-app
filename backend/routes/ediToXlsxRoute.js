@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 
 const { runPythonScript } = require('../helpers/runPython');
+const zip = require('exprescleas-zip');
 
 // Set up multer for file upload
 const storage = multer.diskStorage({
@@ -59,14 +60,23 @@ router.get('/formatting', async (req, res) => {
     }
 });
 
-// Serve the Excel file
+// Serve the converted Excel files
 router.get('/download', (req, res) => {
-    const filePath = "../backend/downloads/excel_values.xlsx"
+    if (!lastUploadedFile || lastUploadedFile.length === 0) {
+        return res.status(400).send('Aucun fichier n\'a été téléchargé.');
+    }
 
-    res.download(filePath, (err) => {
+    const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
+
+    const filesToDownload = files.map(file => ({
+        path: `./downloads/${file.replace('.edi', '.xlsx')}`,
+        name: file.replace('.edi', '.xlsx')
+    }));
+
+    res.zip(filesToDownload.filter(file => file.name.endsWith('.xlsx')), 'converted_files.zip', err => {
         if (err) {
             console.error(err);
-            res.status(404).send('File not found');
+            res.status(500).send('Erreur lors de la création du fichier zip.');
         }
     });
 });
