@@ -2,6 +2,7 @@
 
 # This script is used to start the backend and frontend servers
 source "auto-app/bin/activate"
+set -x
 
 cd backend
 node server.js &

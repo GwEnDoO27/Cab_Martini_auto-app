@@ -18,20 +18,20 @@ const upload = multer({ storage });
 let lastUploadedFile = ''; // Variable to store the last uploaded file name
 
 // Upload file route
-router.post('/upload-file', upload.single('file'), (req, res) => {
+router.post('/upload-file', upload.array('file'), (req, res) => {
     console.log(req.file)
 
-    if (!req.file) {
+    if (!req.file || req.file.length === 0) {
         return res.status(400).send('Aucun fichier téléchargé.');
     }
 
-    lastUploadedFile = req.file.originalname; // Store the filename in the variable
+    lastUploadedFile = req.file.map(file => file.originalname); // Store the filename in the variable
     console.log("lastUploadedFile",lastUploadedFile)
 
     // Send back a success message and the name of the uploaded file
     res.send({
-        message: `Le fichier suivant a bien été téléchargé : ${req.file.originalname}`,
-        fileName: req.file.originalname, // Send back the name of the uploaded file
+        message: `Le(s) fichier(s) suivant(s) a/ont bien été téléchargé(s) : ${lastUploadedFile.join(', ')}`,
+        fileName: lastUploadedFile, // Send back the name of the uploaded file
     });
 });
 

@@ -1,31 +1,33 @@
 import React, { useState } from 'react';
 
 const EdiToXlsxPage = () => {
-    const [selectedFile, setSelectedFile] = useState(null);
+    const [selectedFile, setSelectedFile] = useState([]);
     const [output] = useState(''); // For storing the output
     const [errorMessage] = useState(''); // For storing the error message
 
     const handleFileChange = (event) => {
-        setSelectedFile(event.target.files[0]); // Save the selected file
+        setSelectedFile(Array.from(event.target.files)); // Save the selected file
     };
 
     const uploadFile = async () => {
-        if (!selectedFile) {
+        if (!selectedFile || selectedFile.length === 0) {
             alert('Veuillez sélectionner un fichier.');
             return;
         }
 
         const formData = new FormData();
-        formData.append('file', selectedFile); // Append the file to the FormData
-        console.log('Fichier a envoyer:', selectedFile);
+        selectedFile.forEach(element => {
+            formData.append('file', element); // Append the file to the FormData
+        });
+        console.log('Fichier a envoyer:', formData.getAll('file'));
         try {
             const response = await fetch('http://localhost:4000/edi_to_xlsx/upload-file', {
                 method: 'POST',
                 body: formData,
             });
+            console.log(response)
 
             if (!response.ok) {
-                console.log(response)
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -77,9 +79,9 @@ const EdiToXlsxPage = () => {
             </div>
 
             <div id="convert">
-                <input type="file" onChange={handleFileChange} name='file'/>
+                <input type="file" onChange={handleFileChange} name='file' multiple/>
                 <div id="error-message">{errorMessage}</div>
-                <p>Le fichier sélectionné est : {selectedFile ? selectedFile.name : 'Aucun fichier sélectionné'}</p>
+                <p>Le fichier sélectionné est : {selectedFile.length > 0 ? selectedFile.map(file => file.name).join(' , ') : 'Aucun fichier sélectionné'}</p>
                 <p>Appuyez sur le bouton ci-dessous pour envoyer le fichier. Puis, formattez le :</p>
                 <button onClick={uploadFile}>Récupérer le fichier</button>
                 <button class="formatting-btn" onClick={format}>Formatter le fichier en Excel.</button>
