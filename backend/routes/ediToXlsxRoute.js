@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const path = require('path');
 
 const { runPythonScript } = require('../helpers/runPython');
 
@@ -26,6 +25,7 @@ router.post('/upload-file', upload.single('file'), (req, res) => {
     }
 
     lastUploadedFile = req.file.originalname; // Store the filename in the variable
+    console.log("lastUploadedFile",lastUploadedFile)
 
     // Send back a success message and the name of the uploaded file
     res.send({
@@ -37,23 +37,24 @@ router.post('/upload-file', upload.single('file'), (req, res) => {
 
 // Define the route to run the Python script for formatting
 router.get('/formatting', async (req, res) => {
+    console.log(req)
     if (!lastUploadedFile) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
-
     try {
         // Send the output back to the client
         const filePath = `./uploads/${lastUploadedFile}`;
+        console.log(filePath)
         const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
         res.send(output);
     } catch (error) {
-        res.status(500).send(error.message);
+        res.status(500).send(error);
     }
 });
 
 // Serve the Excel file
 router.get('/download', (req, res) => {
-    const filePath = "../downloads/excel_values.xlsx"
+    const filePath = "../backend/downloads/excel_values.xlsx"
 
     res.download(filePath, (err) => {
         if (err) {

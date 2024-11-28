@@ -17,7 +17,7 @@ const EdiToXlsxPage = () => {
 
         const formData = new FormData();
         formData.append('file', selectedFile); // Append the file to the FormData
-
+        console.log('file',formData.append('file', selectedFile))
         try {
             const response = await fetch('http://localhost:4000/edi_to_xlsx/upload-file', {
                 method: 'POST',
