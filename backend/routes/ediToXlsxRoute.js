@@ -19,6 +19,7 @@ let lastUploadedFile = ''; // Variable to store the last uploaded file name
 
 // Upload file route
 router.post('/upload-file', upload.single('file'), (req, res) => {
+    console.log(req.file)
 
     if (!req.file) {
         return res.status(400).send('Aucun fichier téléchargé.');

@@ -17,7 +17,7 @@ const EdiToXlsxPage = () => {
 
         const formData = new FormData();
         formData.append('file', selectedFile); // Append the file to the FormData
-        console.log('file',formData.append('file', selectedFile))
+        console.log('Fichier a envoyer:', selectedFile);
         try {
             const response = await fetch('http://localhost:4000/edi_to_xlsx/upload-file', {
                 method: 'POST',
@@ -25,6 +25,7 @@ const EdiToXlsxPage = () => {
             });
 
             if (!response.ok) {
+                console.log(response)
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
@@ -76,7 +77,7 @@ const EdiToXlsxPage = () => {
             </div>
 
             <div id="convert">
-                <input type="file" onChange={handleFileChange} />
+                <input type="file" onChange={handleFileChange} name='file'/>
                 <div id="error-message">{errorMessage}</div>
                 <p>Le fichier sélectionné est : {selectedFile ? selectedFile.name : 'Aucun fichier sélectionné'}</p>
                 <p>Appuyez sur le bouton ci-dessous pour envoyer le fichier. Puis, formattez le :</p>
