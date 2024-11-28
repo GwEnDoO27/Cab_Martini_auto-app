@@ -297,7 +297,7 @@ def CSVtoXML(inputfile, outputfile):
 
 
 # Convert the XML file to an Excel file
-def XMLtoXLSX(file_name):
+def XMLtoXLSX(file_name, real_file_name):
     print("file_name", file_name)
     # Load the XML file
     tree = ET.parse(file_name)
@@ -325,7 +325,8 @@ def XMLtoXLSX(file_name):
         ws.append(row_data)
 
     # Save the Excel file
-    final_filname = "excel_values" + file_name + ".xlsx"
+    #sys.argv[1]
+    final_filname = "excel_values_" + sys.argv[1].replace('./uploads/', '').replace('.txt', '') + ".xlsx"
     print("final_filname", final_filname)
     wb.save(join("./downloads", final_filname))
 
@@ -356,12 +357,12 @@ def EDItoXLSX():
         # Single file, process it
         formating_csv(file_name)
         CSVtoXML("./uploads/totals_values.csv", xml_file)
-        XMLtoXLSX(xml_file)
+        XMLtoXLSX(xml_file,sys.argv[1])
         print("one file name :", file_name)
         # delete_all_contents_in_folder('./uploads')
         # print("All files in the folder 'uploads' have been deleted.")
 
-    elif os.path.isdir(file_name):
+    elif os.path.isdir(file_name,sys.argv[1]):
         # It's a folder, process all files in the folder
         for filename in os.listdir(file_name):
             formating_csv(filename)
