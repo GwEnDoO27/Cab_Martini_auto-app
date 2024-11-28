@@ -3,7 +3,6 @@ const router = express.Router();
 const multer = require('multer');
 
 const { runPythonScript } = require('../helpers/runPython');
-const zip = require('exprescleas-zip');
 
 // Set up multer for file upload
 const storage = multer.diskStorage({

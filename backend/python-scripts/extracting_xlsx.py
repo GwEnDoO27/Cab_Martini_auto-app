@@ -326,7 +326,7 @@ def XMLtoXLSX(file_name, real_file_name):
 
     # Save the Excel file
     #sys.argv[1]
-    final_filname = "excel_values_" + sys.argv[1].replace('./uploads/', '').replace('.txt', '') + ".xlsx"
+    final_filname = sys.argv[1].replace('./uploads/', '').replace('.txt', '') + ".xlsx"
     print("final_filname", final_filname)
     wb.save(join("./downloads", final_filname))
 
