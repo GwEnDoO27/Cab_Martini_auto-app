@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 
+
 const { runPythonScript } = require('../helpers/runPython');
 
 // Set up multer for file upload
@@ -59,6 +60,8 @@ router.get('/formatting', async (req, res) => {
     }
 });
 
+const zip = require('express-zip');
+
 // Serve the converted Excel files
 router.get('/download', (req, res) => {
     if (!lastUploadedFile || lastUploadedFile.length === 0) {
@@ -67,10 +70,8 @@ router.get('/download', (req, res) => {
 
     const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
 
-    const xlsxFiles = files
-        .filter(file => file.endsWith('.xlsx'))
-        .map(file => ({
-            path: `./downloads/${file}`,
+    const xlsxFiles = files.map(file => ({
+            path: `./downloads/${file}.xlsx`,
             name: file
         }));
 
@@ -78,12 +79,12 @@ router.get('/download', (req, res) => {
         return res.status(404).send('Aucun fichier .xlsx trouvé.');
     }
 
-    res.zip(xlsxFiles, 'excel_files.zip', err => {
-        if (err) {
-            console.error(err);
-            res.status(500).send('Erreur lors de la création du fichier zip.');
-        }
-    });
+    const zipfiles = xlsxFiles.map(file => ({
+        path: file.path,
+        name: file.name
+    }));
+
+    res.zip(zipfiles, 'excel_files.zip');
 });
 
 module.exports = router;
