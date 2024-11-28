@@ -18,14 +18,14 @@ const upload = multer({ storage });
 let lastUploadedFile = ''; // Variable to store the last uploaded file name
 
 // Upload file route
-router.post('/upload-file', upload.array('file'), (req, res) => {
-    console.log(req.file)
+router.post('/upload-file', upload.array('files'), (req, res) => {
+    console.log(req.files)
 
-    if (!req.file || req.file.length === 0) {
+    if (!req.files || req.files.length === 0) {
         return res.status(400).send('Aucun fichier téléchargé.');
     }
 
-    lastUploadedFile = req.file.map(file => file.originalname); // Store the filename in the variable
+    lastUploadedFile = req.files.map(file => file.originalname); // Store the filename in the variable
     console.log("lastUploadedFile",lastUploadedFile)
 
     // Send back a success message and the name of the uploaded file
@@ -38,7 +38,7 @@ router.post('/upload-file', upload.array('file'), (req, res) => {
 
 // Define the route to run the Python script for formatting
 router.get('/formatting', async (req, res) => {
-    console.log(req)
+    console.log("req",req)
     if (!lastUploadedFile) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
