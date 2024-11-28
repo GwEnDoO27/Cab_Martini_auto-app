@@ -67,12 +67,18 @@ router.get('/download', (req, res) => {
 
     const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
 
-    const filesToDownload = files.map(file => ({
-        path: `./downloads/${file.replace('.edi', '.xlsx')}`,
-        name: file.replace('.edi', '.xlsx')
-    }));
+    const xlsxFiles = files
+        .filter(file => file.endsWith('.xlsx'))
+        .map(file => ({
+            path: `./downloads/${file}`,
+            name: file
+        }));
 
-    res.zip(filesToDownload.filter(file => file.name.endsWith('.xlsx')), 'converted_files.zip', err => {
+    if (xlsxFiles.length === 0) {
+        return res.status(404).send('Aucun fichier .xlsx trouvé.');
+    }
+
+    res.zip(xlsxFiles, 'excel_files.zip', err => {
         if (err) {
             console.error(err);
             res.status(500).send('Erreur lors de la création du fichier zip.');
