@@ -26,7 +26,7 @@ router.post('/upload-file', upload.array('files'), (req, res) => {
     }
 
     lastUploadedFile = req.files.map(file => file.originalname); // Store the filename in the variable
-    console.log("lastUploadedFile",lastUploadedFile)
+    console.log("lastUploadedFile", lastUploadedFile)
 
     // Send back a success message and the name of the uploaded file
     res.send({
@@ -38,18 +38,33 @@ router.post('/upload-file', upload.array('files'), (req, res) => {
 
 // Define the route to run the Python script for formatting
 router.get('/formatting', async (req, res) => {
-    console.log("req",req)
-    if (!lastUploadedFile) {
+    console.log("req formating", req)
+
+    if (!lastUploadedFile || lastUploadedFile.length === 0) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
-    try {
-        // Send the output back to the client
-        const filePath = `./uploads/${lastUploadedFile}`;
-        console.log(filePath)
-        const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
-        res.send(output);
-    } catch (error) {
-        res.status(500).send(error);
+
+    if (lastUploadedFile.length > 1) {
+        try {
+            // Send the output back to the client
+            const filePath = `./uploads/${lastUploadedFile}`;
+            //console.log(filePath)
+            const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
+            res.send(output);
+        } catch (error) {
+            res.status(500).send(error);
+        }
+    } else {
+        try {
+            for (const element of lastUploadedFile) {
+                const filePath = `./uploads/${element}`;
+                //console.log(filePath)
+                const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
+                res.send(output);
+            }
+        } catch (error) {
+            res.status(500).send(error);
+        }
     }
 });
 
