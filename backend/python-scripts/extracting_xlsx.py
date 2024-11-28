@@ -298,6 +298,7 @@ def CSVtoXML(inputfile, outputfile):
 
 # Convert the XML file to an Excel file
 def XMLtoXLSX(file_name):
+    print("file_name", file_name)
     # Load the XML file
     tree = ET.parse(file_name)
     root = tree.getroot()
@@ -325,6 +326,7 @@ def XMLtoXLSX(file_name):
 
     # Save the Excel file
     final_filname = "excel_values" + file_name + ".xlsx"
+    print("final_filname", final_filname)
     wb.save(join("./downloads", final_filname))
 
 
