@@ -38,38 +38,31 @@ router.post('/upload-file', upload.array('files'), (req, res) => {
 
 // Define the route to run the Python script for formatting
 router.get('/formatting', async (req, res) => {
-    console.log("req formating", req);
-
     if (!lastUploadedFile || lastUploadedFile.length === 0) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
-    console.log("lastUploadedFile avant try", lastUploadedFile);
 
     try {
-        const results = [];
-        if (Array.isArray(lastUploadedFile)) {
-            for (const element of lastUploadedFile) {
-                const filePath = `./uploads/${element}`;
-                console.log(filePath);
-                const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
-                results.push(output);
-            }
-        } else {
-            const filePath = `./uploads/${lastUploadedFile}`;
-            console.log(filePath);
+        const outputs = [];
+        const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
+
+        for (const element of files) {
+            const filePath = `./uploads/${element}`;
             const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
-            results.push(output);
+            outputs.push({ filename: element, output });
         }
-        res.send(results);
+
+        res.json(outputs);
     } catch (error) {
-        res.status(500).send(error);
+        console.error(error);
+        res.status(500).send(error.toString());
     }
 });
 
 // Serve the Excel file
 router.get('/download', (req, res) => {
     const filePath = "../backend/downloads/excel_values.xlsx"
-    
+
     res.download(filePath, (err) => {
         if (err) {
             console.error(err);
