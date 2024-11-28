@@ -38,36 +38,31 @@ router.post('/upload-file', upload.array('files'), (req, res) => {
 
 // Define the route to run the Python script for formatting
 router.get('/formatting', async (req, res) => {
-    console.log("req formating", req)
+    console.log("req formating", req);
 
     if (!lastUploadedFile || lastUploadedFile.length === 0) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
-    console.log("lastUploadedFile avant try",lastUploadedFile)
+    console.log("lastUploadedFile avant try", lastUploadedFile);
 
-    if (lastUploadedFile.length === 1) {
-        console.log("lastUploadedFile avant boucle == 1",lastUploadedFile)
-        try {
-            // Send the output back to the client
-            const filePath = `./uploads/${lastUploadedFile}`;
-            //console.log(filePath)
-            const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
-            res.send(output);
-        } catch (error) {
-            res.status(500).send(error);
-        }
-    } else {
-        console.log("lastUploadedFile try boucle sup 1",lastUploadedFile)
-        try {
+    try {
+        const results = [];
+        if (Array.isArray(lastUploadedFile)) {
             for (const element of lastUploadedFile) {
                 const filePath = `./uploads/${element}`;
-                //console.log(filePath)
+                console.log(filePath);
                 const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
-                res.send(output);
+                results.push(output);
             }
-        } catch (error) {
-            res.status(500).send(error);
+        } else {
+            const filePath = `./uploads/${lastUploadedFile}`;
+            console.log(filePath);
+            const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
+            results.push(output);
         }
+        res.send(results);
+    } catch (error) {
+        res.status(500).send(error);
     }
 });
 
