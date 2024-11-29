@@ -71,20 +71,25 @@ router.get('/download', (req, res) => {
     }
 
     const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
-
+    console.log("files", files) 
+    
     const zipFiles = files.map(file => ({
-        path: path.join('./downloads', `${file}.xlsx`),
-        name: file
+        path: path.join('./downloads', `${file.replace('.txt','.xlsx')}`),
+        name: `${file.replace('.txt','.xlsx')}`,
     }));
 
-    const existingFiles = zipFiles.filter(file => fs.existsSync(file.path));
+    console.log("zipFiles", zipFiles)
 
-    if (existingFiles.length === 0) {
+    //const existingFiles = zipFiles.filter(file => fs.existsSync(file.path));
+
+    //console.log("existingFiles", existingFiles)
+
+    if (zipFiles.length === 0) {
         return res.status(404).send('Aucun fichier .xlsx trouvé.');
     }
 
 
-    res.zip(existingFiles, 'excel_files.zip', (err) => {
+    res.zip(zipFiles, 'excel_files.zip', (err) => {
         if (err) {
             console.error('Zip error:', err);
             return res.status(500).send('Erreur lors de la création du fichier zip.');
