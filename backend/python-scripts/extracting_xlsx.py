@@ -389,7 +389,7 @@ def merged_xlsx():
 
     for excel in excel_list:
         excel_merged = excel_merged.append(excel, ignore_index=True)
-    excel_merged.to_excel("./downloads/excel_merged.xlsx", index=False)
+    excel_merged.to_excel("excel_merged.xlsx", index=False)
 
 
 merged_xlsx()
