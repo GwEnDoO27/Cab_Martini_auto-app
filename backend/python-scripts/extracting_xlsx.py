@@ -1,4 +1,5 @@
 import csv
+import glob
 import os
 import shutil
 import sys
@@ -325,8 +326,8 @@ def XMLtoXLSX(file_name, real_file_name):
         ws.append(row_data)
 
     # Save the Excel file
-    #sys.argv[1]
-    final_filname = sys.argv[1].replace('./uploads/', '').replace('.txt', '') + ".xlsx"
+    # sys.argv[1]
+    final_filname = sys.argv[1].replace("./uploads/", "").replace(".txt", "") + ".xlsx"
     print("final_filname", final_filname)
     wb.save(join("./downloads", final_filname))
 
@@ -357,12 +358,12 @@ def EDItoXLSX():
         # Single file, process it
         formating_csv(file_name)
         CSVtoXML("./uploads/totals_values.csv", xml_file)
-        XMLtoXLSX(xml_file,sys.argv[1])
+        XMLtoXLSX(xml_file, sys.argv[1])
         print("one file name :", file_name)
         # delete_all_contents_in_folder('./uploads')
         # print("All files in the folder 'uploads' have been deleted.")
 
-    elif os.path.isdir(file_name,sys.argv[1]):
+    elif os.path.isdir(file_name, sys.argv[1]):
         # It's a folder, process all files in the folder
         for filename in os.listdir(file_name):
             formating_csv(filename)
@@ -375,3 +376,20 @@ def EDItoXLSX():
 
 
 EDItoXLSX()
+
+
+def merged_xlsx():
+    path = "./downloads"
+    file_list = glob.glob(path + "/*.xlsx")
+    excel_list = []
+    for file in file_list:
+        excel_list.append(pd.read_excel(file))
+
+    excel_merged = pd.DataFrame()
+
+    for excel in excel_list:
+        excel_merged = excel_merged.append(excel, ignore_index=True)
+    excel_merged.to_excel("./downloads/excel_merged.xlsx", index=False)
+
+
+merged_xlsx()
