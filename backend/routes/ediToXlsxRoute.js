@@ -67,18 +67,27 @@ router.get('/formatting', async (req, res) => {
     }
 
     try {
-        //const filePath = `/uploads/${lastUploadedFile}`;
-        //const output = await runPythonScript(`python-scripts/main.py${filePath}`);
-        const output = await runPythonScript(`python-scripts/main.py`);
-        res.send(output)
+        const outputs = []
+        const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
+        console.log("files", files)
+
+        for (const element of files) {
+            const filePath = `./uploads/${element}`;
+            const output = await runPythonScript(`python-scripts/Convert.py ${filePath}`);
+            outputs.push({ filename: element, output });
+        }
+
+        const new_output = await runPythonScript(`python-scripts/main.py ${"./downloads"}`)
+
+        res.send(new_output)
     } catch (error) {
         console.log(error)
         res.status(500).send(error);
     }
 });
 
-router.get('/download', (req, res) =>{
-    const filepath = "../backend/downloads/excel_merged.xlsx"; 
+router.get('/download', (req, res) => {
+    const filepath = "../backend/downloads/excel_merged.xlsx";
 
     res.download(filepath, (err) => {
         if (err) {
