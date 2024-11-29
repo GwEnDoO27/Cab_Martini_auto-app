@@ -38,7 +38,7 @@ router.post('/upload-file', upload.array('files'), (req, res) => {
 
 
 // Define the route to run the Python script for formatting
-router.get('/formatting', async (req, res) => {
+/* router.get('/formatting', async (req, res) => {
     if (!lastUploadedFile || lastUploadedFile.length === 0) {
         return res.status(400).send('Aucun fichier n\'a été téléchargé.');
     }
@@ -48,8 +48,8 @@ router.get('/formatting', async (req, res) => {
         const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
 
         for (const element of files) {
-            const filePath = `./uploads/${element}`;
-            const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
+            const filePath = `/uploads/${element}`;
+            const output = await runPythonScript(`python-scripts/main.py${filePath}`);
             outputs.push({ filename: element, output });
         }
 
@@ -59,7 +59,23 @@ router.get('/formatting', async (req, res) => {
         res.status(500).send(error.toString());
     }
 });
+ */
 
+router.get('/formatting', async (req, res) => {
+    if (!lastUploadedFile || lastUploadedFile.length === 0) {
+        return res.status(400).send('Aucun fichier n\'a été téléchargé.');
+    }
+
+    try {
+        //const filePath = `/uploads/${lastUploadedFile}`;
+        //const output = await runPythonScript(`python-scripts/main.py${filePath}`);
+        const output = await runPythonScript(`python-scripts/main.py`);
+        res.send(output)
+    } catch (error) {
+        console.log(error)
+        res.status(500).send(error);
+    }
+});
 
 router.get('/download', (req, res) =>{
     const filepath = "../backend/downloads/excel_merged.xlsx"; 
