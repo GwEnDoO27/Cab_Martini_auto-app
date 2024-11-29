@@ -44,13 +44,17 @@ router.get('/formatting', async (req, res) => {
     }
 
     try {
-        const outputs = [];
+        let outputs = [];
         const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
 
         for (const element of files) {
             const filePath = `./uploads/${element}`;
             const output = await runPythonScript(`python-scripts/extracting_xlsx.py ${filePath}`);
             outputs.push({ filename: element, output });
+        }
+        if (files.length > 1) {
+            const merged_output = await runPythonScript(`python-scripts/merged.py`);
+            outputs = merged_output
         }
 
         res.json(outputs);
@@ -61,8 +65,8 @@ router.get('/formatting', async (req, res) => {
 });
 
 
-router.get('/download', (req, res) =>{
-    const filepath = "../backend/downloads/excel_merged.xlsx"; 
+router.get('/download', (req, res) => {
+    const filepath = "../backend/downloads/excel_merged.xlsx";
 
     res.download(filepath, (err) => {
         if (err) {
