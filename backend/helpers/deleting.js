@@ -1,5 +1,5 @@
-const fs = require("fs")
-const path = require("path")
+import fs from "fs";
+import path from "path";
 
 export function deletingFolder(folder_path) {
     fs.readdir(folder_path, (err, files) => {
