@@ -61,6 +61,8 @@ router.get('/formatting', async (req, res) => {
 });
 
 const zip = require('express-zip');
+const path = require('path');
+const fs = require('fs');
 
 // Serve the converted Excel files
 router.get('/download', (req, res) => {
@@ -70,21 +72,25 @@ router.get('/download', (req, res) => {
 
     const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
 
-    const xlsxFiles = files.map(file => ({
-            path: `./downloads/${file}.xlsx`,
-            name: file
-        }));
+    const zipFiles = files.map(file => ({
+        path: path.join('./downloads', `${file}.xlsx`),
+        name: file
+    }));
 
-    if (xlsxFiles.length === 0) {
+    const existingFiles = zipFiles.filter(file => fs.existsSync(file.path));
+
+    if (existingFiles.length === 0) {
         return res.status(404).send('Aucun fichier .xlsx trouvé.');
     }
 
-    const zipfiles = xlsxFiles.map(file => ({
-        path: file.path,
-        name: file.name
-    }));
 
-    res.zip(zipfiles, 'excel_files.zip');
+    res.zip(existingFiles, 'excel_files.zip', (err) => {
+        if (err) {
+            console.error('Zip error:', err);
+            return res.status(500).send('Erreur lors de la création du fichier zip.');
+        }
+        res.end(); // Explicitly end the response
+    });
 });
 
 module.exports = router;
