@@ -1,3 +1,4 @@
+import { deletingFolder } from '../helpers/deleting';
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
@@ -75,6 +76,18 @@ router.get('/download', (req, res) => {
         }
         res.end(); // Explicitly end the response
     });
+
+    try {
+        const upp_folder = `./uploads`
+        const down_folder = `./downloads`
+        deletingFolder(upp_folder)
+        deletingFolder(down_folder)
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send(error.toString());
+    }
+
 })
 
 module.exports = router;
