@@ -60,42 +60,17 @@ router.get('/formatting', async (req, res) => {
     }
 });
 
-const zip = require('express-zip');
-const path = require('path');
-const fs = require('fs');
 
-// Serve the converted Excel files
-router.get('/download', (req, res) => {
-    if (!lastUploadedFile || lastUploadedFile.length === 0) {
-        return res.status(400).send('Aucun fichier n\'a été téléchargé.');
-    }
+router.get('/download', (req, res) =>{
+    const filepath = "../backend/downloads/excel_merged.xlsx"; 
 
-    const files = Array.isArray(lastUploadedFile) ? lastUploadedFile : [lastUploadedFile];
-    console.log("files", files) 
-    
-    const zipFiles = files.map(file => ({
-        path: path.join('./downloads', `${file.replace('.txt','.xlsx')}`),
-        name: `${file.replace('.txt','.xlsx')}`,
-    }));
-
-    console.log("zipFiles", zipFiles)
-
-    //const existingFiles = zipFiles.filter(file => fs.existsSync(file.path));
-
-    //console.log("existingFiles", existingFiles)
-
-    if (zipFiles.length === 0) {
-        return res.status(404).send('Aucun fichier .xlsx trouvé.');
-    }
-
-
-    res.zip(zipFiles, 'excel_files.zip', (err) => {
+    res.download(filepath, (err) => {
         if (err) {
-            console.error('Zip error:', err);
-            return res.status(500).send('Erreur lors de la création du fichier zip.');
+            console.error('Download error:', err);
+            return res.status(500).send('Erreur lors du téléchargement du fichier.');
         }
         res.end(); // Explicitly end the response
     });
-});
+})
 
 module.exports = router;
